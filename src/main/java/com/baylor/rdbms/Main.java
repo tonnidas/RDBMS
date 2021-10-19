@@ -30,7 +30,7 @@ public class Main {
                 Project.process(params);
                 break;
             case "cross":
-
+                CrossProduct.process(params);
                 break;
             case "join":
 

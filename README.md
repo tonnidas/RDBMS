@@ -16,4 +16,6 @@ $ java -jar target\\RDBMS-1.0.jar
 
 - project input.csv
 - project input.csv B A B
+
+- cross input.csv input2.csv
 ```
