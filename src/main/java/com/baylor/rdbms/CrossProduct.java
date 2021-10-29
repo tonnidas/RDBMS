@@ -8,8 +8,8 @@ public class CrossProduct {
 
     public static void process(String[] params) throws Exception {
 
-        if (params.length != 2) {
-            throw new Exception("Cross product should have exactly 2 params");
+        if (params.length != 3) {
+            throw new Exception("Cross product should have exactly 3 params");
         }
 
         // first element of the data is the header row
@@ -31,7 +31,7 @@ public class CrossProduct {
             }
         }
 
-        // write output
-        Helper.writeCSVFile("output.csv", outputData);
+        // write output, outputFile = params[2]
+        Helper.writeCSVFile(params[2], outputData);
     }
 }

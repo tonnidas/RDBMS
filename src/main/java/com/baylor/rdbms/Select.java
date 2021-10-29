@@ -9,30 +9,30 @@ public class Select {
     // case 1 = filename A B
     // case 2 = filename A 10
     public static void process(String[] params) throws Exception {
-        if (params.length != 3) {
-            throw new Exception("Select should have exactly 3 params");
+        if (params.length != 4) {
+            throw new Exception("Select should have exactly 4 params");
         }
 
-        // first element of the data is the header row
+        // read input file where first element of the data is the header row
         List<String[]> data = Helper.parseCSVFile(params[0]);
 
         // get the index of the first column
-        int colIndex1 = Helper.getColumnIndex(data.get(0), params[1]);
+        int colIndex1 = Helper.getColumnIndex(data.get(0), params[2]);
         if (colIndex1 == -1) {
-            throw new Exception("Column not found: " + params[1]);
+            throw new Exception("Column not found: " + params[2]);
         }
 
         // get the index of the second column
         // if the second column is not found then case 2
-        int colIndex2 = Helper.getColumnIndex(data.get(0), params[2]);
+        int colIndex2 = Helper.getColumnIndex(data.get(0), params[3]);
         if (colIndex2 == -1) {
-            selectCase2(colIndex1, params[2]);
+            selectCase2(colIndex1, params[3], params[1]);
         } else {
-            selectCase1(data, colIndex1, colIndex2);
+            selectCase1(data, colIndex1, colIndex2, params[1]);
         }
     }
 
-    public static void selectCase1(List<String[]> data, int colIndex1, int colIndex2) throws Exception {
+    public static void selectCase1(List<String[]> data, int colIndex1, int colIndex2, String outputFile) throws Exception {
         List<String[]> outputData = new ArrayList<>();
 
         // output has same columns as the input
@@ -46,10 +46,10 @@ public class Select {
         }
 
         // write output
-        Helper.writeCSVFile("output.csv", outputData);
+        Helper.writeCSVFile(outputFile, outputData);
     }
 
-    public static void selectCase2(int colIndex, String value) {
+    public static void selectCase2(int colIndex, String value, String outputFile) {
 
     }
 }
