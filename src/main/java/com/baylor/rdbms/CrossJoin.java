@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CrossProduct {
+public class CrossJoin {
 
     public static void process(String[] params) throws Exception {
 
         if (params.length != 3) {
-            throw new Exception("Cross product should have exactly 3 params");
+            throw new Exception("Cross join should have exactly 3 params");
         }
 
         // first element of the data is the header row
