@@ -11,7 +11,7 @@ public class Project {
             throw new Exception("Project should have at least 2 params (input and output file name)");
         }
 
-        // first element of the data is the header row
+        // read input file where first element of the data is the header row
         List<String[]> data = Helper.parseCSVFile(params[0]);
 
         // if no columns name is given then project all columns i.e. input = output

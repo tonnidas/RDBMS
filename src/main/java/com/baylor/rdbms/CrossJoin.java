@@ -12,10 +12,10 @@ public class CrossJoin {
             throw new Exception("Cross join should have exactly 3 params");
         }
 
-        // first element of the data is the header row
+        // read first input file where first element of the data is the header row
         List<String[]> data1 = Helper.parseCSVFile(params[0]);
 
-        // first element of the data is the header row
+        // read second input file where first element of the data is the header row
         List<String[]> data2 = Helper.parseCSVFile(params[1]);
 
         List<String[]> outputData = new ArrayList<>();
