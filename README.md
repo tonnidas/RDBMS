@@ -18,4 +18,5 @@ $ java -jar target\\RDBMS-1.0.jar
 - project input.csv output.csv B A B
 
 - cross input.csv input2.csv output.csv
+- join input.csv input2.csv output.csv
 ```

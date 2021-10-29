@@ -33,7 +33,7 @@ public class Main {
                 CrossJoin.process(params);
                 break;
             case "join":
-
+                NaturalJoin.process(params);
                 break;
             case "btree":
 
