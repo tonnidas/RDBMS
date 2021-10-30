@@ -5,6 +5,7 @@ import com.opencsv.CSVWriter;
 
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Helper {
@@ -30,5 +31,28 @@ public class Helper {
         csvWriter.writeAll(data);
         csvWriter.close();
         System.out.println("Output written to: " + fileName);
+    }
+
+    public static List<String> findCommonColumns(String[] header1, String[] header2) {
+        List<String> commonCols = new ArrayList<>();
+        for (String s1 : header1) {
+            for (String s2 : header2) {
+                if (s1.equals(s2)) {
+                    commonCols.add(s1);
+                    break;
+                }
+            }
+        }
+        return commonCols;
+    }
+
+    // remove ".csv" extension from file name to get table name
+    public static String getTableName(String fileName) {
+        String fileNameExtension = ".csv";
+        if (fileName.endsWith(fileNameExtension)) {
+            return fileName.substring(0, fileName.length() - fileNameExtension.length());
+        } else {
+            return fileName;
+        }
     }
 }

@@ -18,6 +18,19 @@ public class CrossJoin {
         // read second input file where first element of the data is the header row
         List<String[]> data2 = Helper.parseCSVFile(params[1]);
 
+        // determine common columns among data1 and data2 using their header rows
+        List<String> commonCols = Helper.findCommonColumns(data1.get(0), data2.get(0));
+
+        // modify common column names in data2 row to add a table name prefix
+        String data2Prefix = Helper.getTableName(params[1]) + ".";
+        String[] data2Header = data2.get(0);
+        for (int i = 0; i < data2Header.length; i++) {
+            if (commonCols.contains(data2Header[i])) {
+                data2Header[i] = data2Prefix + data2Header[i];
+            }
+        }
+        data2.set(0, data2Header);
+
         List<String[]> outputData = new ArrayList<>();
         List<String> temp = new ArrayList<>(Arrays.asList(data1.get(0)));
         temp.addAll(Arrays.asList(data2.get(0)));

@@ -18,51 +18,28 @@ public class NaturalJoin {
         List<String[]> data2 = Helper.parseCSVFile(params[1]);
 
         // determine common columns among data1 and data2 using their header rows
-        List<String> commonCols = new ArrayList<>();
-        for (String s1 : data1.get(0)) {
-            for (String s2 : data2.get(0)) {
-                if (s1.equals(s2)) {
-                    commonCols.add(s1);
-                    break;
-                }
-            }
-        }
-
-        // modify data2 header row to add a suffix to the common column names
-        // this is required since we will use the select operator on cross join output
-        String suffix = "-2";
-        String[] data2Header = data2.get(0);
-        for (int i = 0; i < data2Header.length; i++) {
-            if (commonCols.contains(data2Header[i])) {
-                data2Header[i] = data2Header[i] + suffix;
-            }
-        }
-        data2.set(0, data2Header);
-
-        // write modified data2 into a temp file
-        String tempInput2File = "temp-" + params[1]; // add a "temp-" prefix to original file name
-        Helper.writeCSVFile(tempInput2File, data2);
+        List<String> commonCols = Helper.findCommonColumns(data1.get(0), data2.get(0));
 
         // now call the cross join operator and write output in a intermediate file
-        // first input will remain the same, use temp files for second input and output file
+        // input files will remain the same, use temp file for output file
         String tempCrossJoinFile = "temp-cross-join.csv";
-        CrossJoin.process(new String[]{params[0], tempInput2File, tempCrossJoinFile});
+        CrossJoin.process(new String[]{params[0], params[1], tempCrossJoinFile});
 
         // use select to match common columns
         // chain output of one Select operation to input of next Select operation
+        String data2Prefix = Helper.getTableName(params[1]) + ".";
         String tempSelectFile = tempCrossJoinFile;
         for (String commonCol : commonCols) {
             String tempSelectFileOutput = "temp-select-" + commonCol + ".csv";
-            Select.process(new String[]{tempSelectFile, tempSelectFileOutput, commonCol, commonCol + suffix});
+            Select.process(new String[]{tempSelectFile, tempSelectFileOutput, commonCol, data2Prefix + commonCol});
             tempSelectFile = tempSelectFileOutput;
         }
 
         // find final output column names removing duplicates columns
         // keep the first table's columns same and remove common columns from second table
         List<String> finalOutputCols = new ArrayList<>(Arrays.asList(data1.get(0)));
-        for (String col : data2Header) {
-            // don't include columns with the predefined suffix
-            if (!col.endsWith(suffix)) {
+        for (String col : data2.get(0)) {
+            if (!commonCols.contains(col)) {
                 finalOutputCols.add(col);
             }
         }
