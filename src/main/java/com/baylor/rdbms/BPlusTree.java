@@ -3,33 +3,56 @@ package com.baylor.rdbms;
 import java.io.Serializable;
 import java.util.*;
 
-// implements Serializable to store and load object from file
+/**
+ * This BPlusTree class implement a BPlusTree indexing.
+ * It implements Java Serializable to enable storing a object into a file or loading a object from a file.
+ * It supports three operations: insert, search, and toString.
+ * The insert operation inserts a key-value pair into the tree.
+ * It can store duplicates i.e. multiple values under a single key.
+ * The search operation takes a key as input and returns a list of values that belongs to the key.
+ * The toString operation prints the BPlusTree into a human readable string format.
+ * It prints the tree level-by-level using BFS traversal.
+ * For internal nodes, it prints the keys and pointers, where each pointer represent a child nodeID.
+ * For leaf node, it prints the keys and associated values.
+ */
 class BPlusTree implements Serializable {
-    static final int M = 4;
+    static final int M = 100;
 
     Node root;
-    int height;
+    int height, numNodes;
 
     BPlusTree() {
         root = new Node(0);
         height = 0;
+        numNodes = 1;
     }
 
     class Node implements Serializable {
-        int numEntries;
+        int numEntries, nodeID;
         Entry[] entries = new Entry[M];
 
         Node(int numEntries) {
             this.numEntries = numEntries;
+            this.nodeID = numNodes++;
         }
 
-        @Override
-        public String toString() {
-            StringBuilder nodeStr = new StringBuilder("node = | ");
-            for (int i = 0; i < numEntries; i++) {
-                nodeStr.append(entries[i]).append(" | ");
+        public String toString(boolean isLeaf) {
+            List<String> keys = new ArrayList<>();
+            List<Integer> pointers = new ArrayList<>();
+
+            if (isLeaf) {
+                for (int i = 0; i < numEntries; i++) {
+                    keys.add("\n    (key = " + entries[i].key + ", values = " + entries[i].values + ")");
+                }
+                return "nodeID = " + nodeID + ", keys = " + keys;
+            } else {
+                pointers.add(entries[0].next.nodeID);
+                for (int i = 1; i < numEntries; i++) {
+                    keys.add(entries[i].key);
+                    pointers.add(entries[i].next.nodeID);
+                }
+                return "nodeID = " + nodeID + ", keys = " + keys + ", nodeIDPointers = " + pointers;
             }
-            return nodeStr.toString();
         }
     }
 
@@ -50,15 +73,6 @@ class BPlusTree implements Serializable {
             this.key = key;
             this.next = null;
             values = new ArrayList<>(Collections.singleton(value));
-        }
-
-        @Override
-        public String toString() {
-            if (next == null) { // leaf node
-                return "key = " + key + ", values = " + values;
-            } else { // internal node
-                return "key = " + key;
-            }
         }
     }
 
@@ -125,8 +139,9 @@ class BPlusTree implements Serializable {
             }
         }
 
-        if (node.numEntries - pos >= 0) {
-            System.arraycopy(node.entries, pos, node.entries, pos + 1, node.numEntries - pos);
+        // shift right after pos
+        for (int i = node.numEntries; i > pos; i--) {
+            node.entries[i] = node.entries[i - 1];
         }
 
         node.entries[pos] = entry;
@@ -139,49 +154,51 @@ class BPlusTree implements Serializable {
     Node split(Node node) {
         Node newNode = new Node(M / 2);
         node.numEntries = M / 2;
-        System.arraycopy(node.entries, 2, newNode.entries, 0, M / 2);
-        return newNode;
-    }
 
-    // print the tree level-by-level using BFS
-    @Override
-    public String toString() {
-        StringBuilder treeStr = new StringBuilder();
-
-        class Item {
-            final Node node;
-            final String parent; // parent entry key
-            final int level;
-
-            public Item(Node node, String parent, int level) {
-                this.node = node;
-                this.parent = parent;
-                this.level = level;
+        // copy last half to new node
+        for (int i = 0; i < M; i++) {
+            if (i < M / 2) {
+                newNode.entries[i] = node.entries[M / 2 + i];
+            } else {
+                node.entries[i] = null;
             }
         }
 
-        Queue<Item> queue = new ArrayDeque<>();
-        queue.add(new Item(root, "null", 1));
+        return newNode;
+    }
+
+    public String toString() {
+        StringBuilder treeStr = new StringBuilder();
+
+        Queue<Node> nodeQueue = new ArrayDeque<>();
+        Queue<Integer> levelQueue = new ArrayDeque<>();
+
+        nodeQueue.add(root);
+        levelQueue.add(1);
 
         int curLevel = 0;
 
-        while (!queue.isEmpty()) {
-            Item item = queue.remove();
+        while (!nodeQueue.isEmpty()) {
+            Node node = nodeQueue.remove();
+            int level = levelQueue.remove();
 
-            if (item.level > curLevel) {
-                if (item.level <= height) {
-                    treeStr.append("level = ").append(item.level).append("\n");
+            boolean isLeaf = level > height;
+
+            if (level > curLevel) { // new level
+                if (isLeaf) {
+                    treeStr.append("\n").append("level = ").append(level).append(" (leaf)").append("\n");
                 } else {
-                    treeStr.append("level = ").append(item.level).append(" (leaf)").append("\n");
+                    treeStr.append("\n").append("level = ").append(level).append("\n");
                 }
-                curLevel = item.level;
+                curLevel = level;
             }
 
-            treeStr.append(item.node).append(" parent-key = ").append(item.parent).append("\n");
+            treeStr.append(node.toString(isLeaf)).append("\n");
 
-            for (int i = 0; i < item.node.numEntries; i++) {
-                if (item.node.entries[i].next != null) {
-                    queue.add(new Item(item.node.entries[i].next, item.node.entries[i].key, item.level + 1));
+            for (int i = 0; i < node.numEntries; i++) {
+                if (node.entries[i].next != null) {
+                    nodeQueue.add(node.entries[i].next);
+                    levelQueue.add(level + 1);
                 }
             }
         }
@@ -197,33 +214,33 @@ class BPlusTree implements Serializable {
         return k1.compareTo(k2) == 0;
     }
 
-    /*public static void main(String[] args) {
-        BPlusTree bpt = new BPlusTree();
-
-        char key = 'a';
-
-        for (int i = 1; i <= 10; i++, key++) {
-            bpt.insert(key + "", i);
-        }
-
-        bpt.insert("a", 20); // duplicate
-
-        System.out.println("a: " + bpt.search("a"));
-        System.out.println("d: " + bpt.search("j"));
-        System.out.println("k: " + bpt.search("k"));
-        System.out.println();
-
-        System.out.println("height: " + bpt.height);
-        System.out.println();
-
-        System.out.println(bpt);
-
-        try {
-            Helper.storeBPlusTree(bpt, "tree.txt");
-            BPlusTree bpt2 = Helper.loadBPlusTree("tree.txt");
-            System.out.println("serialization check = " + bpt.toString().equals(bpt2.toString()));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }*/
+//    public static void main(String[] args) {
+//        BPlusTree bpt = new BPlusTree();
+//
+//        char key = 'a';
+//
+//        for (int i = 1; i <= 10; i++, key++) {
+//            bpt.insert(key + "", i);
+//        }
+//
+//        bpt.insert("a", 20); // duplicate
+//
+//        System.out.println("a: " + bpt.search("a"));
+//        System.out.println("d: " + bpt.search("j"));
+//        System.out.println("k: " + bpt.search("k"));
+//        System.out.println();
+//
+//        System.out.println("height: " + bpt.height);
+//        System.out.println();
+//
+//        System.out.println(bpt);
+//
+//        try {
+//            Helper.storeBPlusTree(bpt, "tree.txt");
+//            BPlusTree bpt2 = Helper.loadBPlusTree("tree.txt");
+//            System.out.println("serialization check = " + bpt.toString().equals(bpt2.toString()));
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//    }
 }
