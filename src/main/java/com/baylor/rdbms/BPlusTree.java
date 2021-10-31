@@ -236,7 +236,7 @@ class BPlusTree implements Serializable {
 //        System.out.println(bpt);
 //
 //        try {
-//            Helper.storeBPlusTree(bpt, "tree.txt");
+//            Helper.storeBPlusTree(bpt, "test.btree");
 //            BPlusTree bpt2 = Helper.loadBPlusTree("tree.txt");
 //            System.out.println("serialization check = " + bpt.toString().equals(bpt2.toString()));
 //        } catch (Exception e) {
