@@ -36,7 +36,7 @@ class BPlusTree implements Serializable {
     class Entry implements Serializable {
         String key;
         Node next;
-        List<String> values;
+        List<Integer> values;
 
         // constructor for internal node entry
         Entry(String key, Node next) {
@@ -46,7 +46,7 @@ class BPlusTree implements Serializable {
         }
 
         // constructor for leaf node entry
-        Entry(String key, String value) {
+        Entry(String key, Integer value) {
             this.key = key;
             this.next = null;
             values = new ArrayList<>(Collections.singleton(value));
@@ -62,11 +62,11 @@ class BPlusTree implements Serializable {
         }
     }
 
-    List<String> search(String key) {
+    List<Integer> search(String key) {
         return searchRec(root, key, height);
     }
 
-    List<String> searchRec(Node node, String key, int ht) {
+    List<Integer> searchRec(Node node, String key, int ht) {
         Entry[] entries = node.entries;
 
         if (ht == 0) { // leaf node
@@ -82,7 +82,7 @@ class BPlusTree implements Serializable {
         return null;
     }
 
-    void insert(String key, String value) {
+    void insert(String key, Integer value) {
         Node node = insertRec(root, key, value, height);
 
         if (node != null) { // spilt root
@@ -94,7 +94,7 @@ class BPlusTree implements Serializable {
         }
     }
 
-    Node insertRec(Node node, String key, String value, int ht) {
+    Node insertRec(Node node, String key, Integer value, int ht) {
         Entry entry = new Entry(key, value);
         int pos = node.numEntries;
 
@@ -199,10 +199,10 @@ class BPlusTree implements Serializable {
         char key = 'a';
 
         for (int i = 1; i <= 10; i++, key++) {
-            bpt.insert(key + "", i + "");
+            bpt.insert(key + "", i);
         }
 
-        bpt.insert("a", "20"); // duplicate
+        bpt.insert("a", 20); // duplicate
 
         System.out.println("a: " + bpt.search("a"));
         System.out.println("d: " + bpt.search("j"));
