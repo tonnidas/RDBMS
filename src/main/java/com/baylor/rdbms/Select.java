@@ -3,6 +3,21 @@ package com.baylor.rdbms;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * This Select class takes an array of string parameters as input.
+ * It validates the length of the input and throws exception if parameters length is not 4.
+ * There are two cases based on the input parameters, "fname oname A B" or "fname oname A 10".
+ * It determines the case based on the last input parameter. Case 1 if it is column name, otherwise case 2.
+ * It throws exception if it cannot find the input csv file or specified column names.
+ * It writes the output in the outputFile in csv format.
+ * If the input relations are R(A, B, C), then output will have the same columns but only contains the rows
+ * where A and B values equal (case 1) or, column A has the specified value (case 2).
+ * <p>
+ * For case 2, we first prepare the BPlusTree indexing for the specified column.
+ * It use column values as key and row number as value for inserting into BPlusTree.
+ * It writes the BPlusTree object into the "fname.A.btree" file using Java Serialization.
+ * Then it search for the specified value in BPlusTree and outputs rows for the returned row numbers.
+ */
 public class Select {
     public static void process(String[] params) throws Exception {
 

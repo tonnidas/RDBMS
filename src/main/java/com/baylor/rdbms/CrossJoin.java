@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The CrossJoin class takes an array of string parameters as input.
+ * It validates the length of the input and throws exception if parameters length is not 3.
+ * The parameters are in the form, "f1 f2 oname", where f1 and f2 are input files.
+ * It throws exception if it cannot find the input csv files.
+ * It writes the output in the outputFile in csv format.
+ * If the input relations are R(A, B) and S(B, C), the output will have (A, B, S.B, C) columns.
+ * Here we append the input file name to the common columns for the second file.
+ */
 public class CrossJoin {
 
     public static void process(String[] params) throws Exception {
@@ -49,7 +58,7 @@ public class CrossJoin {
             }
         }
 
-        // write output
+        // write output to outputFile
         Helper.writeCSVFile(outputFile, outputData);
     }
 }

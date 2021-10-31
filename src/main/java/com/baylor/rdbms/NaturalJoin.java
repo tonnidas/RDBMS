@@ -4,6 +4,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The NaturalJoin class takes an array of string parameters as input.
+ * It validates the length of the input and throws exception if parameters length is not 3.
+ * The parameters are in the form, "f1 f2 oname", where f1 and f2 are input files.
+ * It throws exception if it cannot find the input csv files.
+ * NaturalJoin first call CrossJoin and write output to a temp file "temp-cross-join.csv".
+ * Then it calls Select (case 1) to n times, where n is the number of common columns among f1 and f2.
+ * The first Select operation takes the output of the cross join as input.
+ * The subsequent Select operation takes output of the previous Selection operation as input.
+ * All Select operations write output in temporary files "temp-select-{columnName}.csv".
+ * Finally duplicate columns are eliminated using the Project operation.
+ * Project operation takes the output of the last Select operation as input.
+ * Project writes output in the final outputFile in csv format.
+ * If the input relations are R(A, B) and S(B, C), the output will have (A, B, C) columns.
+ * Here we keep only one copy of the common columns.
+ */
 public class NaturalJoin {
     public static void process(String[] params) throws Exception {
 

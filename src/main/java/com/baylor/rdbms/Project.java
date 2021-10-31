@@ -4,6 +4,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The Project class takes an array of string parameters as input.
+ * It validates the length of the input and throws exception if parameters length is less than 2.
+ * The parameters are in the form, "fname oname A B C", where A, B, C are column names.
+ * It throws exception if it cannot find the input csv file or specified column names.
+ * It writes the output in the outputFile in csv format.
+ * If the input relation is R(A, B, C, D) and we are projecting A, B, C, the output will have only A, B, C columns.
+ * If the input relation is R(A, B, C, D) and we were not given any attribute to project, we project the whole relation
+ * and the output will have A, B, C, D columns.
+ */
 public class Project {
     public static void process(String[] params) throws Exception {
 
