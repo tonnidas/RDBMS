@@ -36,7 +36,7 @@ public class Main {
                 NaturalJoin.process(params);
                 break;
             case "btree":
-
+                Helper.printBPlusTree(params);
                 break;
             default:
                 throw new Exception("Invalid operator: " + operator);

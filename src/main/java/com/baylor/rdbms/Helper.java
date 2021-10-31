@@ -63,6 +63,8 @@ public class Helper {
 
         o.close();
         f.close();
+
+        System.out.println("Output written to: " + fileName);
     }
 
     public static BPlusTree loadBPlusTree(String fileName) throws Exception {
@@ -75,5 +77,17 @@ public class Helper {
         fi.close();
 
         return tree;
+    }
+
+    public static void printBPlusTree(String[] params) throws Exception {
+        if (params.length != 1) {
+            throw new Exception("btree operator should have exactly 1 param");
+        }
+        try {
+            BPlusTree tree = loadBPlusTree(params[0]);
+            System.out.println(tree);
+        } catch (Exception e) {
+            throw new Exception("Can not read BPlusTree from file: " + params[0] + " reason: " + e.getMessage());
+        }
     }
 }

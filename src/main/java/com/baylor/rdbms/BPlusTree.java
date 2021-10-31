@@ -193,7 +193,7 @@ class BPlusTree implements Serializable {
         return k1.compareTo(k2) == 0;
     }
 
-    public static void main(String[] args) {
+/*    public static void main(String[] args) {
         BPlusTree bpt = new BPlusTree();
 
         char key = 'a';
@@ -221,5 +221,5 @@ class BPlusTree implements Serializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
+    }*/
 }

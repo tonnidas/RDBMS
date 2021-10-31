@@ -13,6 +13,8 @@ $ java -jar target\\RDBMS-1.0.jar
 
 ```
 - select input.csv output.csv A B
+- select input.csv output.csv A 1
+- btree input.csv.A.btree
 
 - project input.csv output.csv
 - project input.csv output.csv B A B
