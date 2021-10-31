@@ -25,7 +25,7 @@ class BPlusTree implements Serializable {
 
         @Override
         public String toString() {
-            StringBuilder nodeStr = new StringBuilder("| ");
+            StringBuilder nodeStr = new StringBuilder("node = | ");
             for (int i = 0; i < numEntries; i++) {
                 nodeStr.append(entries[i]).append(" | ");
             }
@@ -55,9 +55,9 @@ class BPlusTree implements Serializable {
         @Override
         public String toString() {
             if (next == null) { // leaf node
-                return key + values;
+                return "key = " + key + ", values = " + values;
             } else { // internal node
-                return key;
+                return "key = " + key;
             }
         }
     }
@@ -169,11 +169,15 @@ class BPlusTree implements Serializable {
             Item item = queue.remove();
 
             if (item.level > curLevel) {
-                treeStr.append("level = ").append(item.level).append("\n");
+                if (item.level <= height) {
+                    treeStr.append("level = ").append(item.level).append("\n");
+                } else {
+                    treeStr.append("level = ").append(item.level).append(" (leaf)").append("\n");
+                }
                 curLevel = item.level;
             }
 
-            treeStr.append(item.node).append(" parent = ").append(item.parent).append("\n");
+            treeStr.append(item.node).append(" parent-key = ").append(item.parent).append("\n");
 
             for (int i = 0; i < item.node.numEntries; i++) {
                 if (item.node.entries[i].next != null) {
@@ -193,7 +197,7 @@ class BPlusTree implements Serializable {
         return k1.compareTo(k2) == 0;
     }
 
-/*    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         BPlusTree bpt = new BPlusTree();
 
         char key = 'a';
