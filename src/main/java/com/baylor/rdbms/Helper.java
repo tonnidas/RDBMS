@@ -3,8 +3,7 @@ package com.baylor.rdbms;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,5 +53,27 @@ public class Helper {
         } else {
             return fileName;
         }
+    }
+
+    public static void storeBPlusTree(BPlusTree tree, String fileName) throws Exception {
+        FileOutputStream f = new FileOutputStream(fileName);
+        ObjectOutputStream o = new ObjectOutputStream(f);
+
+        o.writeObject(tree);
+
+        o.close();
+        f.close();
+    }
+
+    public static BPlusTree loadBPlusTree(String fileName) throws Exception {
+        FileInputStream fi = new FileInputStream(fileName);
+        ObjectInputStream oi = new ObjectInputStream(fi);
+
+        BPlusTree tree = (BPlusTree) oi.readObject();
+
+        oi.close();
+        fi.close();
+
+        return tree;
     }
 }
