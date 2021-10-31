@@ -8,21 +8,26 @@ public class CrossJoin {
 
     public static void process(String[] params) throws Exception {
 
+        // params: f1 f2 oname
         if (params.length != 3) {
             throw new Exception("Cross join should have exactly 3 params");
         }
 
+        String inputFile1 = params[0];
+        String inputFile2 = params[1];
+        String outputFile = params[2];
+
         // read first input file where first element of the data is the header row
-        List<String[]> data1 = Helper.parseCSVFile(params[0]);
+        List<String[]> data1 = Helper.parseCSVFile(inputFile1);
 
         // read second input file where first element of the data is the header row
-        List<String[]> data2 = Helper.parseCSVFile(params[1]);
+        List<String[]> data2 = Helper.parseCSVFile(inputFile2);
 
         // determine common columns among data1 and data2 using their header rows
         List<String> commonCols = Helper.findCommonColumns(data1.get(0), data2.get(0));
 
         // modify common column names in data2 row to add a table name prefix
-        String data2Prefix = Helper.getTableName(params[1]) + ".";
+        String data2Prefix = Helper.getTableName(inputFile2) + ".";
         String[] data2Header = data2.get(0);
         for (int i = 0; i < data2Header.length; i++) {
             if (commonCols.contains(data2Header[i])) {
@@ -44,7 +49,7 @@ public class CrossJoin {
             }
         }
 
-        // write output, outputFile = params[2]
-        Helper.writeCSVFile(params[2], outputData);
+        // write output
+        Helper.writeCSVFile(outputFile, outputData);
     }
 }

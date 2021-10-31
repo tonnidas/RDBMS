@@ -5,29 +5,34 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Project {
-    // filename A B C
     public static void process(String[] params) throws Exception {
+
+        // params: fname oname A B C
         if (params.length < 2) {
             throw new Exception("Project should have at least 2 params (input and output file name)");
         }
 
+        String inputFile = params[0];
+        String outputFile = params[1];
+        String[] columns = Arrays.copyOfRange(params, 2, params.length);
+
         // read input file where first element of the data is the header row
-        List<String[]> data = Helper.parseCSVFile(params[0]);
+        List<String[]> data = Helper.parseCSVFile(inputFile);
 
         // if no columns name is given then project all columns i.e. input = output
-        if (params.length == 2) {
+        if (columns.length == 0) {
             // write output
-            Helper.writeCSVFile(params[1], data);
+            Helper.writeCSVFile(outputFile, data);
             return;
         }
 
         // get indexes of all project columns
         List<Integer> colIndexes = new ArrayList<>();
-        for (int i = 2; i < params.length; i++) {
+        for (String c : columns) {
             // data.get(0) is the header row
-            int index = Helper.getColumnIndex(data.get(0), params[i]);
+            int index = Helper.getColumnIndex(data.get(0), c);
             if (index == -1) {
-                throw new Exception("Column not found: " + params[i]);
+                throw new Exception("Column not found: " + c);
             } else {
                 colIndexes.add(index);
             }
@@ -37,7 +42,7 @@ public class Project {
 
         // output has the projected columns only
         // i.e. all the params except the first two (input and output filename)
-        outputData.add(Arrays.copyOfRange(params, 2, params.length));
+        outputData.add(columns);
 
         // for each row output projected columns
         for (int i = 1; i < data.size(); i++) {
@@ -52,7 +57,7 @@ public class Project {
             outputData.add(newRow.toArray(new String[0]));
         }
 
-        // write output, outputFile = params[1]
-        Helper.writeCSVFile(params[1], outputData);
+        // write output
+        Helper.writeCSVFile(outputFile, outputData);
     }
 }

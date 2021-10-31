@@ -1,34 +1,40 @@
 package com.baylor.rdbms;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Select {
-    // case 1 = filename A B
-    // case 2 = filename A 10
     public static void process(String[] params) throws Exception {
+
+        // params case 1: fname oname A B
+        // params case 2: fname oname A 10
         if (params.length != 4) {
             throw new Exception("Select should have exactly 4 params");
         }
 
+        String inputFile = params[0];
+        String outputFile = params[1];
+        String column1 = params[2];
+        String column2 = params[3];
+        String value = params[3];
+
         // read input file where first element of the data is the header row
-        List<String[]> data = Helper.parseCSVFile(params[0]);
+        List<String[]> data = Helper.parseCSVFile(inputFile);
 
         // get the index of the first column
-        int colIndex1 = Helper.getColumnIndex(data.get(0), params[2]);
+        int colIndex1 = Helper.getColumnIndex(data.get(0), column1);
         if (colIndex1 == -1) {
-            throw new Exception("Column not found: " + params[2]);
+            throw new Exception("Column not found: " + column1);
         }
 
         // get the index of the second column
         // if the second column is not found then case 2
-        int colIndex2 = Helper.getColumnIndex(data.get(0), params[3]);
+        int colIndex2 = Helper.getColumnIndex(data.get(0), column2);
         if (colIndex2 == -1) {
-            selectCase2(data, colIndex1, params[3], params[0], params[1]);
+            String treeFile = inputFile + "." + column1 + ".btree";
+            selectCase2(data, colIndex1, value, treeFile, outputFile);
         } else {
-            selectCase1(data, colIndex1, colIndex2, params[1]);
+            selectCase1(data, colIndex1, colIndex2, outputFile);
         }
     }
 
@@ -49,7 +55,7 @@ public class Select {
         Helper.writeCSVFile(outputFile, outputData);
     }
 
-    public static void selectCase2(List<String[]> data, int colIndex, String value, String inputFile, String outputFile) throws Exception {
+    public static void selectCase2(List<String[]> data, int colIndex, String value, String treeFile, String outputFile) throws Exception {
         // create BPlusTree index for specified column
         // use column item as key and row number as value
         BPlusTree tree = new BPlusTree();
@@ -58,7 +64,6 @@ public class Select {
         }
 
         // save the tree in file
-        String treeFile = inputFile + "." + data.get(0)[colIndex] + ".btree";
         try {
             Helper.storeBPlusTree(tree, treeFile);
         } catch (Exception e) {
