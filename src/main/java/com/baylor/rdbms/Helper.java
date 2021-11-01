@@ -15,10 +15,36 @@ import java.util.List;
  */
 public class Helper {
     public static List<String[]> parseCSVFile(String fileName) throws Exception {
-        CSVReader csvReader = new CSVReader(new FileReader(fileName));
-        List<String[]> data = csvReader.readAll();
-        csvReader.close();
-        return data;
+        try {
+            CSVReader csvReader = new CSVReader(new FileReader(fileName));
+            List<String[]> data = csvReader.readAll();
+            csvReader.close();
+            return sanitizeData(data);
+        } catch (Exception e) {
+            throw new Exception("Can not read CSV data from file: " + fileName, e);
+        }
+    }
+
+    public static List<String[]> sanitizeData(List<String[]> data) throws Exception {
+        if (data == null || data.size() == 0 || data.get(0).length == 0) {
+            throw new Exception("Empty CSV file");
+        }
+
+        int numCols = data.get(0).length;
+        List<String[]> newData = new ArrayList<>();
+
+        for (String[] row : data) {
+            if (row.length != numCols) { // skip empty rows with unmatched columns
+                continue;
+
+            }
+            for (int i = 0; i < row.length; i++) {
+                row[i] = row[i].trim();
+            }
+            newData.add(row);
+        }
+
+        return newData;
     }
 
     // return -1 if index not found
@@ -32,10 +58,14 @@ public class Helper {
     }
 
     public static void writeCSVFile(String fileName, List<String[]> data) throws Exception {
-        CSVWriter csvWriter = new CSVWriter(new FileWriter(fileName));
-        csvWriter.writeAll(data);
-        csvWriter.close();
-        System.out.println("Output written to: " + fileName);
+        try {
+            CSVWriter csvWriter = new CSVWriter(new FileWriter(fileName));
+            csvWriter.writeAll(data);
+            csvWriter.close();
+            System.out.println("Output written to: " + fileName);
+        } catch (Exception e) {
+            throw new Exception("Can not write CSV data into file: " + fileName, e);
+        }
     }
 
     public static List<String> findCommonColumns(String[] header1, String[] header2) {
@@ -61,7 +91,7 @@ public class Helper {
         }
     }
 
-    // Stores the serializable object btree in a file
+    //sStores the serializable object btree in a file
     public static void storeBPlusTree(BPlusTree tree, String fileName) throws Exception {
         FileOutputStream f = new FileOutputStream(fileName);
         ObjectOutputStream o = new ObjectOutputStream(f);
@@ -74,7 +104,7 @@ public class Helper {
         System.out.println("Output written to: " + fileName);
     }
 
-    // returns the tree in a bplustree format
+    // returns the tree in a BPlusTree format
     public static BPlusTree loadBPlusTree(String fileName) throws Exception {
         FileInputStream fi = new FileInputStream(fileName);
         ObjectInputStream oi = new ObjectInputStream(fi);
@@ -96,7 +126,7 @@ public class Helper {
             BPlusTree tree = loadBPlusTree(params[0]);
             System.out.println(tree);
         } catch (Exception e) {
-            throw new Exception("Can not read BPlusTree from file: " + params[0] + " reason: " + e.getMessage());
+            throw new Exception("Can not read BPlusTree from file: " + params[0], e);
         }
     }
 }

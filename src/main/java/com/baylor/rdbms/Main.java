@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.Scanner;
 
 /**
- * The Main class takes input of a query
- * It processes a query by calling processQuery method which identifies all the cases (select, project, cross, join, btree)
- * This method is case sensitive. The query should be in non-CapsLK format (it should be like "select", not "Select")
+ * The Main class takes input of a query, parses operator name, and execute appropriate operator.
+ * It supports select, project, cross, join, btree operators.
+ * This query is case sensitive i.e. it should be "select", not "Select" or "SELECT".
  */
 public class Main {
     public static void main(String[] args) {
@@ -18,6 +18,8 @@ public class Main {
             processQuery(query);
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+            System.out.println("Reason:");
+            e.printStackTrace();
         }
     }
 

@@ -17,7 +17,7 @@ $ java -jar target\\RDBMS-1.0.jar
 - btree input.csv.A.btree
 
 - project input.csv output.csv
-- project input.csv output.csv B A B
+- project input.csv output.csv A B C
 
 - cross input.csv input2.csv output.csv
 - join input.csv input2.csv output.csv

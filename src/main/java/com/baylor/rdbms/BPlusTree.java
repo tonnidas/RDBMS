@@ -93,7 +93,8 @@ class BPlusTree implements Serializable {
                     return searchRec(entries[i].next, key, ht - 1);
             }
         }
-        return null;
+
+        return new ArrayList<>(); // nothing found
     }
 
     void insert(String key, Integer value) {

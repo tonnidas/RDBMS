@@ -1,6 +1,7 @@
 package com.baylor.rdbms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -87,6 +88,8 @@ public class Select {
 
         // search rows
         List<Integer> rows = tree.search(value);
+
+        System.out.println("Found " + rows.size() + " rows");
 
         // keep rows returned by tree indexer
         List<String[]> outputData = new ArrayList<>();
